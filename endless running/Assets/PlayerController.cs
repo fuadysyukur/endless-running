@@ -9,19 +9,34 @@ public class PlayerController : MonoBehaviour
     public float jumpVelocity = 20f;
     public float groundHeight = 10f;
     public bool isGrounded = false;
+
+
     public bool isHoldingJump = false;
+    public float maxHoldJumpTime = 0.4f;
+    public float holdJumpTimer = 0.0f;
+
+    //public float jumpGroundThreshold = 3f;
 
     private void Start()
     {
-        
+
     }
 
     private void FixedUpdate()
     {
         Vector2 pos = transform.position;
 
-        if(!isGrounded)
+        if (!isGrounded)
         {
+            if(isHoldingJump)
+            {
+                holdJumpTimer += Time.fixedDeltaTime;
+                if(holdJumpTimer >= maxHoldJumpTime)
+                {
+                    isHoldingJump = false;
+                }
+            }    
+
             pos.y += velocity.y * Time.fixedDeltaTime;
             if (!isHoldingJump)
             {
@@ -32,7 +47,6 @@ public class PlayerController : MonoBehaviour
             {
                 pos.y = groundHeight;
                 isGrounded = true;
-                Debug.Log("Grounded");
             }
         }
         transform.position = pos;
@@ -40,13 +54,16 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if(isGrounded)
+        Vector2 pos = transform.position;
+        //float groundDistance = Mathf.Abs(pos.y - groundHeight);
+        if (isGrounded /*|| /*groundDistance <= jumpGroundThreshold*/)
         {
             if(Input.GetKeyDown(KeyCode.Space))
             {
                 isGrounded = false;
                 velocity.y = jumpVelocity;
                 isHoldingJump = true;
+                holdJumpTimer = 0;
             }
         }
 
@@ -54,5 +71,7 @@ public class PlayerController : MonoBehaviour
         {
             isHoldingJump = false;
         }
+
+
     }
 }
