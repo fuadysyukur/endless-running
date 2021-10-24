@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public float jumpVelocity = 20f;
     public float groundHeight = 10f;
     public bool isGrounded = false;
+    public bool isHoldingJump = false;
 
     private void Start()
     {
@@ -22,7 +23,10 @@ public class PlayerController : MonoBehaviour
         if(!isGrounded)
         {
             pos.y += velocity.y * Time.fixedDeltaTime;
-            velocity.y += gravity * Time.fixedDeltaTime;
+            if (!isHoldingJump)
+            {
+                velocity.y += gravity * Time.fixedDeltaTime;
+            }
 
             if(pos.y <= groundHeight)
             {
@@ -42,7 +46,13 @@ public class PlayerController : MonoBehaviour
             {
                 isGrounded = false;
                 velocity.y = jumpVelocity;
+                isHoldingJump = true;
             }
+        }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            isHoldingJump = false;
         }
     }
 }
